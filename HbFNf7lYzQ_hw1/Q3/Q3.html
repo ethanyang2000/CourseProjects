@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- cse6242 -->
+
+<!-- run: http-server & -->
+
+<head>
+  <style></style>
+<title>Running Total of TMDb Movies by Year</title>
+</head>
+
+<body>
+
+  <script src="lib/d3/d3.min.js"></script>
+  <script src="lib/d3-dsv/d3-dsv.min.js"></script>
+  <script src="lib/d3-fetch/d3-fetch.min.js"></script>
+
+
+  <script>
+    // define the dimensions and margins for the graph
+    const margin = ({top: 50, right: 20, bottom: 50, left: 80})
+    const width = 960
+    const height = 500
+    const barPadding = 2
+    const font_size = '10px'
+
+    // define function to parse time in years format
+    function parseTime(year){
+      return new Date(year, 1, 1)
+    }
+
+    // create scales x & y for X and Y axis and set their ranges
+    var x = d3.scaleTime().range([margin.left, width-margin.right])
+    var y = d3.scaleLinear().range([height-margin.bottom, margin.top])
+
+
+    // append svg element to the body of the page
+    // set dimensions and position of the svg element
+    var svg = d3.select("body").append("svg")
+      .attr('height', height)
+      .attr('width', width)
+      .attr('id', 'svg1')
+      .append('g')
+      .attr('id','container')
+
+
+    // Get the data
+	  var pathToCsv = "q3.csv";		// path to csv
+	
+    d3.dsv(",", pathToCsv, function (d) {
+      return {
+        // format data attributes if required
+        year: Number(d.year),
+        running_total: Number(d.running_total)
+      }
+    }).then(function (data) {
+      console.log(data); // you should see the data in your browser's developer tools console 
+      
+      /* Create bar plot using data from csv */
+      
+      // set the domains of X and Y scales based on data
+      x.domain([new Date(d3.min(data, (d)=>d.year), 1, 1), new Date(d3.max(data, (d)=>d.year), 12, 31)]);
+      y.domain([0,d3.max(data, function(d){
+        return d.running_total
+      })]);
+
+      // Add bars to svg - create new elements based on your data
+      var barWidth = (width-margin.left-margin.right)/(d3.max(data, (d)=>d.year) - d3.min(data, (d)=>d.year) + 1)
+      var timeStep = d3.timeYear.every(10)
+      var ticks = x.ticks(timeStep)
+
+      svg.append("g")
+        .attr('id', 'bars')
+        .selectAll('rect')
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr('x', (d)=>x(parseTime(d.year)))
+        .attr('y', (d)=>y(d.running_total))
+        .attr('height', (s)=>height-y(s.running_total)-margin.bottom)
+        .attr('width', barWidth-barPadding)
+        .attr('fill', 'blue')
+
+      // Add title for SVG
+      svg.append("text")
+        .text("Running Total of TMDb Movies by Year")
+        .attr('id', 'title')
+        .attr('x', (width-margin.right+margin.left)/2)
+        .attr('y', margin.top)
+        .style('font-size', '20px')
+        .attr('text-anchor', 'middle')
+      
+      svg.append('text')
+        .text('yyang3041')
+        .attr('id', 'credit')
+        .attr('x', width-50)
+        .attr('y', height-margin.bottom+40)
+        .attr('fill', 'gray')
+        .style('font-size', font_size)
+        .attr('text-anchor', 'middle')
+
+      // Add the X Axis
+      svg.append('g')
+        .attr('transform', `translate(0, ${height-margin.bottom})`)
+        .call(d3.axisBottom(x).tickValues(ticks).tickFormat(d3.timeFormat("%Y")))
+        .attr('id', 'x_axis')
+
+      // Add the text label for X Axis
+      svg.append("text")
+        .attr("id", 'x_axis_label')
+        .attr("x", width/2)
+        .attr('y', height-margin.bottom+40)
+        .text("Year")
+        .style('text-anchor', 'middle')
+        .style('font-size', font_size)
+
+      // Add the Y Axis
+      svg.append('g')
+        .attr('transform', `translate(${margin.left}, 0)`)
+        .call(d3.axisLeft(y))
+        .attr('id', 'y_axis')
+
+      // Add the text label for Y axis
+      svg.append("text")
+        .attr("id", 'y_axis_label')
+        .attr('transform', 'rotate(-90)')
+        .attr("x", -height/2)
+        .attr('y', margin.left-50)
+        .text("Running Total")
+        .style('text-anchor', 'middle')
+        .style('font-size', font_size)
+      
+      svg.selectAll('.tick')
+        .style('font-size', font_size)
+
+    }).catch(function (error) {
+      console.log(error);
+    });
+
+
+  </script>
+
+</body>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+
+<head>
+  <title>Line Charts</title>
+  <meta charset="utf-8">
+
+  <script type="text/javascript" src="../lib/d3.v5.min.js"></script>
+  
+</head>
+
+<body>
+  <svg width="1000" height="400" id="svg-a"></svg>
+  <svg width="1000" height="400" id="svg-b"></svg>
+  <svg width="1000" height="400" id="svg-c1"></svg>
+  <svg width="1000" height="400" id="svg-c2"></svg>
+  <div id="signature">yyang3041</div>
+
+  <script>
+    var margin = { top: 50, right: 300, bottom: 50, left: 70 },
+        width = 1000 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+
+    var svg_a = d3.select("#svg-a")
+
+    svg_a.append("text")
+      .attr("id", "title-a")
+      .attr("x", (width / 2))             
+      .attr("y", (margin.top / 2))
+      .attr("text-anchor", "middle")  
+      .text("Number of Ratings 2016-2020");
+    
+    svg_a = svg_a.attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("id", "plot-a")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    line_svg_a = svg_a.append("g").attr("id", "lines-a")
+
+    var parseDate = d3.timeParse("%Y-%m-%d");
+
+    d3.csv("boardgame_ratings.csv").then(function(data) {
+      
+      data.forEach(function(d) {
+          d.date = parseDate(d.date);
+      });
+
+      var x = d3.scaleTime()
+        .domain([d3.min(data, function(d) { return d.date; }), d3.max(data, function(d) { return d.date; })])
+        .range([0, width]);
+
+      var y = d3.scaleLinear()
+        .domain([0, d3.max(data, function(d) {
+            return d3.max([d['Catan=count'], d['Dominion=count'], d['Codenames=count'], d['Terraforming Mars=count'], d['Gloomhaven=count'], d['Magic: The Gathering=count'], d['Dixit=count'], d['Monopoly=count']]);
+        })])
+        .range([height, 0]);
+
+      var line = d3.line()
+        .x(function(d) { return x(d.date); })
+
+      var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      var games = ['Catan', 'Dominion', 'Codenames', 'Terraforming Mars', 'Gloomhaven', 'Magic: The Gathering', 'Dixit', 'Monopoly'];
+      
+      games.forEach(function(game, i) {
+            line_svg_a.append("path")
+              .datum(data)
+              .attr("fill", "none")
+              .attr("stroke", color(i))
+              .attr("stroke-width", 2)
+              .attr("d", line.y(function(d) { return y(d[game + '=count']); }));
+
+            line_svg_a.append("text")
+              .datum(data[data.length - 1])
+              .attr("fill", color(i))
+              .attr("transform", "translate(" + (width + 10) + "," + y(data[data.length - 1][game + '=count']) + ")")
+              .attr("dy", "0.35em")
+              .attr("text-anchor", "start")
+              .text(game);
+      });
+
+      svg_a.append("g")
+        .attr("id", "x-axis-a")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x).ticks(d3.timeMonth.every(3)).tickFormat(d3.timeFormat("%b %y")))
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(" + (width / 2) + ", 40)")
+        .text("Month");
+
+      svg_a.append("g")
+        .attr("id", "y-axis-a")
+        .call(d3.axisLeft(y))
+        .append("text")
+        .attr("text-anchor", "middle")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .text("Num of Ratings");
+    });
+
+  </script>
+
+  <script>
+  var margin = { top: 50, right: 300, bottom: 50, left: 70 },
+      width = 1000 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+  var svg = d3.select("#svg-b")
+  var line_svgg = svg
+
+  svg.append("text")
+    .attr("id", "title-b")
+    .attr("x", (width / 2))             
+    .attr("y", (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .text("Number of Ratings 2016-2020 with Rankings");
+
+  svg = svg.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("id", "plot-b")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var line_svg = svg.append("g").attr("id", "lines-b")
+    
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  d3.csv("boardgame_ratings.csv").then(function(data) {
+    
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+    });
+
+    var x = d3.scaleTime()
+      .domain([d3.min(data, function(d) { return d.date; }), d3.max(data, function(d) { return d.date; })])
+      .range([0, width]);
+
+    var y = d3.scaleLinear()
+      .domain([0, d3.max(data, function(d) {
+          return d3.max([d['Catan=count'], d['Dominion=count'], d['Codenames=count'], d['Terraforming Mars=count'], d['Gloomhaven=count'], d['Magic: The Gathering=count'], d['Dixit=count'], d['Monopoly=count']]);
+      })])
+      .range([height, 0]);
+
+    var line = d3.line()
+      .x(function(d) { return x(d.date); })
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var games = ['Catan', 'Dominion', 'Codenames', 'Terraforming Mars', 'Gloomhaven', 'Magic: The Gathering', 'Dixit', 'Monopoly'];
+    
+    games.forEach(function(game, i) {
+          line_svg.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color(i))
+            .attr("stroke-width", 2)
+            .attr("d", line.y(function(d) { return y(d[game + '=count']); }));
+
+          line_svg.append("text")
+            .datum(data[data.length - 1])
+            .attr("fill", color(i))
+            .attr("transform", "translate(" + (width + 10) + "," + y(data[data.length - 1][game + '=count']) + ")")
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "start")
+            .text(game);
+    });
+
+    svg.append("g")
+      .attr("id", "x-axis-b")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(d3.timeMonth.every(3)).tickFormat(d3.timeFormat("%b %y")))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(" + (width / 2) + ", 40)")
+      .text("Month");
+
+    svg.append("g")
+      .attr("id", "y-axis-b")
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .text("Num of Ratings");
+
+    var showGames = ['Catan', 'Codenames', 'Terraforming Mars', 'Gloomhaven'];
+    
+    svg = svg.append("g").attr("id", "symbols-b")
+    svg.selectAll(".game-symbol")
+      .data(showGames)
+      .enter().append("g")
+      .each(function(game) {
+          var gameD = data.map(function(d, i) {
+              if(d.date.getMonth() % 3 == 0){
+                return { date: d.date, rank: +d[game + '=rank'], count: +d[game+'=count'] };
+              }
+          });
+          gameData = []
+          gameD.forEach(function(d){
+            if(d!==undefined){
+              gameData.push(d)
+            }
+          })
+          
+          var symbols = svg.selectAll(".game-symbol." + game)
+              .data(gameData)
+              .enter().append("g")
+              .attr("class", "game-symbol " + game);
+
+          symbols.append("circle")
+              .data(gameData)
+              .attr("cx", function(d) { return x(d.date); })
+              .attr("cy", function(d) { return y(d.count); })
+              .attr("r", 12)
+              .style("fill", color(game));
+
+          symbols.append("text")
+              .data(gameData)
+              .attr("x", function(d) { return x(d.date); })
+              .attr("y", function(d) { return y(d.count); })
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.rank; });
+      });
+
+    var legend = line_svgg.append("g")
+        .attr("width", 150)
+        .attr("height", 100)
+        .attr("id", "legend-b")
+        .attr("transform", function(d, i) {
+            return "translate(800, 350)";
+        });
+
+    legend.append("circle")
+        .attr("r", 18)
+        .style("fill", "none")
+        .style("stroke", color(0))
+        .style("stroke-width", 2);
+
+    legend.append("text")
+        .attr("x", 0)
+        .attr("dy", "0.35em")
+        .style("text-anchor", "middle")
+        .text("rank")
+    
+    legend.append("text")
+        .attr("x", 0)
+        .attr("dy", "2em")
+        .style("text-anchor", "middle")
+        .text("BoardGameGeek Rank");
+  });
+
+  </script>
+
+  <script>
+  var margin = { top: 50, right: 300, bottom: 50, left: 70 },
+      width = 1000 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+  var svgc1 = d3.select("#svg-c1")
+  var legend_c1 = svgc1
+
+  svgc1.append("text")
+    .attr("id", "title-c-1")
+    .attr("x", (width / 2))             
+    .attr("y", (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .text("Number of Ratings 2016-2020 (Square root Scale)");
+
+  svgc1 = svgc1.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("id", "plot-c-1")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var line_svg_c1 = svgc1.append("g").attr("id", "lines-c-1")
+    
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  d3.csv("boardgame_ratings.csv").then(function(data) {
+    
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+    });
+
+    var x = d3.scaleTime()
+      .domain([d3.min(data, function(d) { return d.date; }), d3.max(data, function(d) { return d.date; })])
+      .range([0, width]);
+
+    var y = d3.scaleSqrt()
+      .domain([0, d3.max(data, function(d) {
+          return d3.max([d['Catan=count'], d['Dominion=count'], d['Codenames=count'], d['Terraforming Mars=count'], d['Gloomhaven=count'], d['Magic: The Gathering=count'], d['Dixit=count'], d['Monopoly=count']]);
+      })])
+      .range([height, 0]);
+
+    var line = d3.line()
+      .x(function(d) { return x(d.date); })
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var games = ['Catan', 'Dominion', 'Codenames', 'Terraforming Mars', 'Gloomhaven', 'Magic: The Gathering', 'Dixit', 'Monopoly'];
+    
+    games.forEach(function(game, i) {
+          line_svg_c1.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color(i))
+            .attr("stroke-width", 2)
+            .attr("d", line.y(function(d) { return y(d[game + '=count']); }));
+
+          line_svg_c1.append("text")
+            .datum(data[data.length - 1])
+            .attr("fill", color(i))
+            .attr("transform", "translate(" + (width + 10) + "," + y(data[data.length - 1][game + '=count']) + ")")
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "start")
+            .text(game);
+    });
+
+    svgc1.append("g")
+      .attr("id", "x-axis-c-1")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(d3.timeMonth.every(3)).tickFormat(d3.timeFormat("%b %y")))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(" + (width / 2) + ", 40)")
+      .text("Month");
+
+    svgc1.append("g")
+      .attr("id", "y-axis-c-1")
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .text("Num of Ratings");
+
+    var showGames = ['Catan', 'Codenames', 'Terraforming Mars', 'Gloomhaven'];
+    
+    svgc1 = svgc1.append("g").attr("id", "symbols-c-1")
+    svgc1.selectAll(".game-symbol")
+      .data(showGames)
+      .enter().append("g")
+      .attr("class", "game-symbol")
+      .each(function(game) {
+          var gameD = data.map(function(d, i) {
+              if(d.date.getMonth() % 3 == 0){
+                return { date: d.date, rank: +d[game + '=rank'], count: +d[game+'=count'] };
+              }
+          });
+          gameData = []
+          gameD.forEach(function(d){
+            if(d!==undefined){
+              gameData.push(d)
+            }
+          })
+          
+          var symbols_c1 = svgc1.selectAll(".game-symbol." + game)
+              .data(gameData)
+              .enter().append("g")
+              .attr("class", "game-symbol " + game);
+
+          symbols_c1.append("circle")
+              .data(gameData)
+              .attr("cx", function(d) { return x(d.date); })
+              .attr("cy", function(d) { return y(d.count); })
+              .attr("r", 12)
+              .style("fill", color(game));
+
+          symbols_c1.append("text")
+              .data(gameData)
+              .attr("x", function(d) { return x(d.date); })
+              .attr("y", function(d) { return y(d.count); })
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.rank; });
+      });
+
+    var leg_c1 = legend_c1.append("g")
+        .attr("width", 150)
+        .attr("height", 100)
+        .attr("id", "legend-c-1")
+        .attr("transform", function(d, i) {
+            return "translate(800, 350)";
+        });
+
+    leg_c1.append("circle")
+        .attr("r", 18)
+        .style("fill", "none")
+        .style("stroke", color(0))
+        .style("stroke-width", 2);
+
+    leg_c1.append("text")
+        .attr("x", 0)
+        .attr("dy", "0.35em")
+        .style("text-anchor", "middle")
+        .text("rank")
+    
+    leg_c1.append("text")
+        .attr("x", 0)
+        .attr("dy", "2em")
+        .style("text-anchor", "middle")
+        .text("BoardGameGeek Rank");
+  });
+
+  </script>
+
+  <script>
+  var margin = { top: 50, right: 300, bottom: 50, left: 70 },
+      width = 1000 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
+
+  var svgc2 = d3.select("#svg-c2")
+  var legend_c2 = svgc2
+
+  svgc2.append("text")
+    .attr("id", "title-c-2")
+    .attr("x", (width / 2))             
+    .attr("y", (margin.top / 2))
+    .attr("text-anchor", "middle")  
+    .text("Number of Ratings 2016-2020 (Log Scale)");
+
+  svgc2 = svgc2.attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("id", "plot-c-2")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  var line_svg_c2 = svgc2.append("g").attr("id", "lines-c-2")
+    
+  var parseDate = d3.timeParse("%Y-%m-%d");
+
+  d3.csv("boardgame_ratings.csv").then(function(data) {
+    
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+    });
+
+    var x = d3.scaleTime()
+      .domain([d3.min(data, function(d) { return d.date; }), d3.max(data, function(d) { return d.date; })])
+      .range([0, width]);
+
+    var y = d3.scaleLog()
+      .domain([1, d3.max(data, function(d) {
+          return d3.max([d['Catan=count'], d['Dominion=count'], d['Codenames=count'], d['Terraforming Mars=count'], d['Gloomhaven=count'], d['Magic: The Gathering=count'], d['Dixit=count'], d['Monopoly=count']]);
+      })])
+      .range([height, 0]);
+
+    var line = d3.line()
+      .x(function(d) { return x(d.date); })
+
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var games = ['Catan', 'Dominion', 'Codenames', 'Terraforming Mars', 'Gloomhaven', 'Magic: The Gathering', 'Dixit', 'Monopoly'];
+    
+    games.forEach(function(game, i) {
+          line_svg_c2.append("path")
+            .datum(data)
+            .attr("fill", "none")
+            .attr("stroke", color(i))
+            .attr("stroke-width", 2)
+            .attr("d", line.y(function(d) { return y(d[game + '=count']); }));
+
+          line_svg_c2.append("text")
+            .datum(data[data.length - 1])
+            .attr("fill", color(i))
+            .attr("transform", "translate(" + (width + 10) + "," + y(data[data.length - 1][game + '=count']) + ")")
+            .attr("dy", "0.35em")
+            .attr("text-anchor", "start")
+            .text(game);
+    });
+
+    svgc2.append("g")
+      .attr("id", "x-axis-c-2")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x).ticks(d3.timeMonth.every(3)).tickFormat(d3.timeFormat("%b %y")))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(" + (width / 2) + ", 40)")
+      .text("Month");
+
+    svgc2.append("g")
+      .attr("id", "y-axis-c-2")
+      .call(d3.axisLeft(y))
+      .append("text")
+      .attr("text-anchor", "middle")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x", 0 - (height / 2))
+      .attr("dy", "1em")
+      .text("Num of Ratings");
+
+    var showGames = ['Catan', 'Codenames', 'Terraforming Mars', 'Gloomhaven'];
+    
+    svgc2 = svgc2.append("g").attr("id", "symbols-c-2")
+    svgc2.selectAll(".game-symbol")
+      .data(showGames)
+      .enter().append("g")
+      .attr("class", "game-symbol")
+      .each(function(game) {
+          var gameD = data.map(function(d, i) {
+              if(d.date.getMonth() % 3 == 0){
+                return { date: d.date, rank: +d[game + '=rank'], count: +d[game+'=count'] };
+              }
+          });
+          gameData = []
+          gameD.forEach(function(d){
+            if(d!==undefined){
+              gameData.push(d)
+            }
+          })
+          
+          var symbols_c2 = svgc2.selectAll(".game-symbol." + game)
+              .data(gameData)
+              .enter().append("g")
+              .attr("class", "game-symbol " + game);
+
+          symbols_c2.append("circle")
+              .data(gameData)
+              .attr("cx", function(d) { return x(d.date); })
+              .attr("cy", function(d) { return y(d.count); })
+              .attr("r", 12)
+              .style("fill", color(game));
+
+          symbols_c2.append("text")
+              .data(gameData)
+              .attr("x", function(d) { return x(d.date); })
+              .attr("y", function(d) { return y(d.count); })
+              .style("text-anchor", "middle")
+              .text(function(d) { return d.rank; });
+      });
+
+    var leg_c2 = legend_c2.append("g")
+        .attr("width", 150)
+        .attr("height", 100)
+        .attr("id", "legend-c-2")
+        .attr("transform", function(d, i) {
+            return "translate(800, 350)";
+        });
+
+    leg_c2.append("circle")
+        .attr("r", 18)
+        .style("fill", "none")
+        .style("stroke", color(0))
+        .style("stroke-width", 2);
+
+    leg_c2.append("text")
+        .attr("x", 0)
+        .attr("dy", "0.35em")
+        .style("text-anchor", "middle")
+        .text("rank")
+    
+    leg_c2.append("text")
+        .attr("x", 0)
+        .attr("dy", "2em")
+        .style("text-anchor", "middle")
+        .text("BoardGameGeek Rank");
+  });
+
+  </script>
+
+
+
+</body>

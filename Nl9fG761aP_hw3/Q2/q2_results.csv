@@ -1,0 +1,91 @@
+Part 1a: top-5 most popular drop locations,,
+DOLocationID,number_of_dropoffs,
+61,5937,
+138,5146,
+239,4133,
+244,4006,
+42,3859,
+Part 1b: top-5 most popular pickup locations,,
+PULocationID,number_of_pickups,
+74,17360,
+75,13299,
+244,9958,
+41,9645,
+82,9306,
+Part 2: top-3 locations with the maximum overall activity,,
+locationID,total_activity,
+74,20292,
+75,16326,
+244,13964,
+Part 3: all the boroughs in the order of having the highest to lowest number of activities,,
+Borough,total_number_activities,
+Brooklyn,198506,
+Manhattan,185146,
+Queens,157636,
+Bronx,67707,
+Unknown,1215,
+Staten Island,890,
+EWR,104,
+Part 4: top 2 days of week with the largest number of (daily) average pickups - along with the values of average number of pickups on each of the two days,,
+day_of_week,avg_count,
+Wednesday,10257.6,
+Saturday,9884.75,
+Part 5: For each particular hour of a day (0 to 23 - 0 being midnight) - in their order from 0 to 23. Find the zone in Brooklyn borough with the LARGEST number of pickups,,
+hour_of_day,Zone,max_count
+0,Williamsburg (North Side),569
+1,Williamsburg (North Side),460
+2,Williamsburg (North Side),429
+3,Williamsburg (North Side),357
+4,Williamsburg (North Side),228
+5,East Williamsburg,89
+6,East New York,149
+7,Brooklyn Heights,307
+8,Brooklyn Heights,511
+9,Brooklyn Heights,574
+10,Brooklyn Heights,502
+11,Brooklyn Heights,563
+12,Brooklyn Heights,491
+13,Brooklyn Heights,472
+14,Fort Greene,511
+15,Fort Greene,559
+16,Fort Greene,658
+17,Downtown Brooklyn/MetroTech,651
+18,Fort Greene,736
+19,Fort Greene,647
+20,Fort Greene,558
+21,Fort Greene,556
+22,DUMBO/Vinegar Hill,611
+23,Williamsburg (North Side),613
+Part 6: Which 3 different days of the January - in Manhattan - saw the largest percentage increment in pickups compared to previous day,,
+day, percent_change,
+22,51.06260769672601,
+02,28.37761447,
+28,22.939560439560438,
+14,21.02983638113571,
+07,14.285714285714285,
+03,10.347864376926465,
+10,9.720627631075391,
+08,8.292079207920793,
+31,7.423904974016332,
+23,7.3764258555133075,
+15,6.719681908548708,
+16,5.774962742175857,
+04,4.030327214684756,
+29,4.022346368715084,
+21,3.2009484291641965,
+17,2.782669954209229,
+25,2.2574955908289245,
+24,0.3895184135977337,
+18,0,
+09,-0.457142857,
+11,-0.488315312,
+30,-3.544575725,
+05,-6.98120445,
+26,-11.41773025,
+06,-12.53608247,
+13,-14.06120761,
+27,-14.95327103,
+12,-15.24710831,
+19,-21.07607951,
+20,-26.74772036,
+01,null,
